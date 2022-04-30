@@ -1,0 +1,57 @@
+version: '3.3'
+services:
+  saludar:
+    image: rrojano/jdk8
+    volumes:
+      - ./SaludosDividido/Saludar-0.0.1-SNAPSHOT.jar:/app/Saludar-0.0.1-SNAPSHOT.jar
+    ports:
+      - 8080:8080
+    command: ["java", "-jar", "/app/Saludar-0.0.1-SNAPSHOT.jar"]
+    environment:
+      MYSQL_HOST: db
+  modificar:
+    image: rrojano/jdk8
+    volumes:
+      - ./SaludosDividido/ModificarSaludo-0.0.1-SNAPSHOT.jar:/app/ModificarSaludo-0.0.1-SNAPSHOT.jar
+    ports:
+      - 8081:8080
+    command: ["java", "-jar", "/app/ModificarSaludo-0.0.1-SNAPSHOT.jar"]
+    environment:
+      MYSQL_HOST: db
+  borrar:
+    image: rrojano/jdk8
+    volumes:
+      - ./SaludosDividido/BorrarSaludo-0.0.1-SNAPSHOT.jar:/app/BorrarSaludo-0.0.1-SNAPSHOT.jar
+    ports:
+      - 8083:8080
+    command: ["java", "-jar", "/app/BorrarSaludo-0.0.1-SNAPSHOT.jar"]
+    environment:
+      MYSQL_HOST: db
+  buscar:
+    image: rrojano/jdk8
+    volumes:
+      - ./SaludosDividido/BuscarSaludos-0.0.1-SNAPSHOT.jar:/app/BuscarSaludos-0.0.1-SNAPSHOT.jar
+    ports:
+      - 8084:8080
+    command: ["java", "-jar", "/app/BuscarSaludos-0.0.1-SNAPSHOT.jar"]
+    environment:
+      MYSQL_HOST: db
+  default:
+    image: nginx
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 80:80
+    environment:
+      MYSQL_HOST: db
+    depends_on:
+      - saludar
+      - buscar
+      - modificar
+      - borrar
+  db:
+    image: mariadb
+    volumes:
+      - ./bd.sql:/docker-entrypoint-initdb.d/bd.sql
+    environment:
+      MARIADB_ROOT_PASSWORD: 123456
